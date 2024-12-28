@@ -3,10 +3,8 @@ const net = require("net");
 const server = net.createServer();
 
 server.on("connection", (socket) => {
-  console.log("A new connection to the server");
-
   socket.on("data", (data) => {
-    console.log(data.toString("utf8"));
+    socket.write(data);
   });
 });
 
