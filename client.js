@@ -12,17 +12,25 @@ const socket = net.createConnection(
     host: "127.0.0.1",
     port: 3008,
   },
-  async () => {
+  () => {
     console.log("connected to the server");
+    const ask = async () => {
+      const message = await rl.question("Enter a message >");
+      process.stdout.moveCursor(0, -1); // dx,dy --> how much direction to move in x and y direction for the cursor in the console
+      process.stdout.clearLine(0); // 0,1,-1 --> o clears the whole line
+      socket.write(message);
+    };
+    ask();
 
-    const message = await rl.question("Enter a message >");
-    socket.write(message);
+    socket.on("data", (data) => {
+      console.log(); // createa new empty line and then move up to prevent deleting previous display text line
+      process.stdout.moveCursor(0, -1); // dx,dy --> how much direction to move in x and y direction for the cursor in the console
+      process.stdout.clearLine(0); // 0,1,-1 --> o clears the whole line
+      console.log(data.toString("utf8"));
+      ask();
+    });
   }
 );
-
-socket.on("data", (data) => {
-  console.log(data.toString("utf8"));
-});
 
 socket.on("end", () => {
   console.log("connection was ended");
