@@ -7,6 +7,8 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+let id;
+
 const socket = net.createConnection(
   {
     host: "127.0.0.1",
@@ -18,7 +20,7 @@ const socket = net.createConnection(
       const message = await rl.question("Enter a message >");
       process.stdout.moveCursor(0, -1); // dx,dy --> how much direction to move in x and y direction for the cursor in the console
       process.stdout.clearLine(0); // 0,1,-1 --> o clears the whole line
-      socket.write(message);
+      socket.write(`${id}-message-${message}`);
     };
     ask();
 
@@ -26,7 +28,13 @@ const socket = net.createConnection(
       console.log(); // createa new empty line and then move up to prevent deleting previous display text line
       process.stdout.moveCursor(0, -1); // dx,dy --> how much direction to move in x and y direction for the cursor in the console
       process.stdout.clearLine(0); // 0,1,-1 --> o clears the whole line
-      console.log(data.toString("utf8"));
+      // extracting only id from server - id-1 using string methods
+      if (data.toString().substring(0, 2) == "id") {
+        id = data.toString().substring(3);
+        console.log(`Your id is ${id}! \n`);
+      } else {
+        console.log(data.toString("utf8"));
+      }
       ask();
     });
   }
