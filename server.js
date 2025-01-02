@@ -26,8 +26,7 @@ server.on("connection", (socket) => {
     });
   });
 
-  // for exit of client we will broadcast to all
-  socket.on("end", () => {
+  const handleClientLeave = () => {
     const clientToRemove = clients.findIndex(
       (client) => client.socket === socket
     );
@@ -37,6 +36,14 @@ server.on("connection", (socket) => {
     clients.map((client) => {
       client.socket.write(`User ${clientId} left`);
     });
+  };
+  // for exit of client we will broadcast to all
+  socket.on("error", () => {
+    handleClientLeave();
+  });
+  // in case of linux/mac - we can handle it in end event
+  socket.on("end", () => {
+    handleClientLeave();
   });
   clients.push({ id: clientId.toString(), socket });
 });
